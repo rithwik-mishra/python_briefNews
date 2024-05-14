@@ -23,6 +23,6 @@ wired_articles = wired_main_page.find_all("div", class_ = "SummaryItemContent-ei
 for article in wired_articles:
     url_and_title = article.find("a", class_ = "SummaryItemHedLink-civMjp ejgyuy summary-item-tracking__hed-link summary-item__hed-link")
     url = url_and_title["href"]
-    title = url_and_title.find("h3", class_ = "SummaryItemHedBase-hiFYpQ iNKqKi summary-item__hed").text
+    title = url_and_title.text
 
     print(f"{title}: {url}")
