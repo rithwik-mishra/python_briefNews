@@ -1,33 +1,34 @@
 import requests
 from bs4 import BeautifulSoup
+from nlp_summarizer import summarize
 
-def getWiredArticles():
-    # define all URLs to crawl from
-    wired_url = "https://www.wired.com/category/science/"
+def getTechArticles():
+    # define URL to crawl from
+    tech_url = "https://www.sciencenews.org/topic/tech"
 
     # get raw webpage content
-    wired_content = requests.get(wired_url)
+    tech_content = requests.get(tech_url)
 
     # check if html request was successful
-    if wired_content.status_code == 200:
-        wired_html = wired_content.text
+    if tech_content.status_code == 200:
+        tech_html = tech_content.text
     else:
-        raise Exception(f"failed to fetch content from {wired_url}")
+        raise Exception(f"failed to fetch content from {tech_url}")
 
     # parse html and extract articles
-    wired_main_page = BeautifulSoup(wired_html, "html.parser")
+    tech_main_page = BeautifulSoup(tech_html, "html.parser")
 
     # get a set of the content of each article
-    wired_articles = wired_main_page.find_all("div", class_ = "SummaryItemContent-eiDYMl nLise summary-item__content")
-    return wired_articles
+    tech_articles = tech_main_page.find_all("h3", class_ = "post-item-river__title___vyz1w")
+    return tech_articles
 
 def main():
-    wired_articles = getWiredArticles()
+    tech_articles = getTechArticles()
     # iterate through and set title url parameters of each article
-    for article in wired_articles:
+    for article in tech_articles:
         # from wired main page, get url and title of each article
-        url_and_title = article.find("a", class_ = "SummaryItemHedLink-civMjp ejgyuy summary-item-tracking__hed-link summary-item__hed-link")
-        url = "https://www.wired.com" + url_and_title["href"]
+        url_and_title = article.find("a")
+        url = url_and_title["href"]
         title = url_and_title.text
 
         # get raw webpage content 
@@ -41,14 +42,23 @@ def main():
 
         # parse article html and extract all text into one string
         article_page = BeautifulSoup(article_html, "html.parser")
-        text_array = article_page.find_all("p")
+
+        # since articles on sciencenews.org have two different classes for article text,
+        # use a try catch to handle any NoneType exceptions by trying both class definitions
+        try:
+            text_array = article_page.find("div", "rich-text single__rich-text___RmCDp").find_all("p")
+        except:
+            text_array = article_page.find("div", "rich-text rich-text--with-sidebar single__rich-text___RmCDp").find_all("p")
+
+        # iterate through text_array and concat into one string
         full_text = ""
         for text_p in text_array:
-            full_text += text_p.text
+            full_text += text_p.text + " "
 
 
         print(f"{title}: {url}")
-        print(f"{full_text}")
+        summary = summarize(full_text)
+        print(f"{summary}")
 
 if __name__ == "__main__":
     main()
