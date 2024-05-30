@@ -1,9 +1,10 @@
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
+import heapq
 
 def summarize(text: str) -> str:
     # tokenize the text
-    stop_words = set(stopwords.words("english"))
+    stop_words = stopwords.words("english")
     words = word_tokenize(text)
     sentences = sent_tokenize(text)
 
@@ -28,22 +29,13 @@ def summarize(text: str) -> str:
                 else:
                     sentence_freqTable[sentence] = freq
     
-    # define average value for each sentence from given text
+    # define weighted value for each sentence from given text
     sumVal = 0
     for sentence in sentence_freqTable:
         sumVal += sentence_freqTable[sentence]
     sentence_avg = sumVal // len(sentence_freqTable)
 
-    # add sentences over 1.2 times the average value into our summary
-    summary = ""
-    for sentence in sentence_freqTable:
-        if sentence_freqTable[sentence] > (1.2 * sentence_avg):
-            summary += " " + sentence
-    
+    # use heap queue to extract top 8 largest weighted values and display as summary
+    summary_top8 =  heapq.nlargest(8, sentence_freqTable, key = sentence_freqTable.get) 
+    summary = " ".join(summary_top8)
     return summary
-
-
-
-
-
-
