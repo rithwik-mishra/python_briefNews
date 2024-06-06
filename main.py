@@ -1,64 +1,46 @@
 import requests
 from bs4 import BeautifulSoup
-from nlp_summarizer import summarize
+#from nlp_summarizer import summarize
+from test_commandLine import getArticles, topics_list
+import random
+import tkinter as tk
+from tkinter import ttk
 
-def getTechArticles():
-    # define URL to crawl from
-    tech_url = "https://www.sciencenews.org/topic/tech"
+def randomArticle() -> tuple:
+    # use random.choice to choose a single article of random topic
+    chosen_topic = random.choice(topics_list)
+    article_list = getArticles(chosen_topic)
+    chosen_article = random.choice(article_list)
+
+    # find url and title for chosen article
+    url_and_title = chosen_article.find("a")
+    url = url_and_title["href"]
+    title = url_and_title.text
 
     # get raw webpage content
-    tech_content = requests.get(tech_url)
+    article_content = requests.get(url)
 
-    # check if html request was successful
-    if tech_content.status_code == 200:
-        tech_html = tech_content.text
-    else:
-        raise Exception(f"failed to fetch content from {tech_url}")
-
-    # parse html and extract articles
-    tech_main_page = BeautifulSoup(tech_html, "html.parser")
-
-    # get a set of the content of each article
-    tech_articles = tech_main_page.find_all("h3", class_ = "post-item-river__title___vyz1w")
-    return tech_articles
-
-def main():
-    tech_articles = getTechArticles()
-    # iterate through and set title url parameters of each article
-    for article in tech_articles:
-        # from wired main page, get url and title of each article
-        url_and_title = article.find("a")
-        url = url_and_title["href"]
-        title = url_and_title.text
-
-        # get raw webpage content 
-        article_content = requests.get(url)
-
-        # check request status
-        if article_content.status_code == 200:
-            article_html = article_content.text
-        else:
-            raise Exception(f"Failed to fetch content from {url}")
-
-        # parse article html and extract all text into one string
-        article_page = BeautifulSoup(article_html, "html.parser")
-
-        # since articles on sciencenews.org have two different classes for article text,
-        # use a try catch to handle any NoneType exceptions by trying both class definitions
-        try:
-            text_array = article_page.find("div", "rich-text single__rich-text___RmCDp").find_all("p")
-        except:
-            text_array = article_page.find("div", "rich-text rich-text--with-sidebar single__rich-text___RmCDp").find_all("p")
-
-        # iterate through text_array and concat into one string
-        full_text = ""
-        for text_p in text_array:
-            full_text += text_p.text + " "
+    #check request status
 
 
-        print(f"{title}: {url}")
-        summary = summarize(full_text)
-        print(f"{summary}")
+def main() -> None:
+    """Tkinter implementation for BriefNews."""
+    # initializing tkinter window
+    root = tk.Tk()
+    root.title("Python BriefNews")
+    #root.configure(background="grey")
+    root.geometry("700x700")
+    root.resizable(False, False)
+
+    # title label
+    title_label = ttk.Label(root, text="BriefNews", font=("Arial", 30))
+    title_label.place(relx = 0.5, rely = 0.05, anchor="n")
+
+
+
+    root.mainloop()
+
+
 
 if __name__ == "__main__":
     main()
