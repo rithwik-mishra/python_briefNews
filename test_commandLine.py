@@ -2,13 +2,13 @@ import requests
 from bs4 import BeautifulSoup, ResultSet
 from nlp_summarizer import summarize
 
+# create global topics_list variable
+topics_list: list[str] = ["tech", "space", "physics", "life", "humans", "earth"]
+
 def getArticles(topic: str) -> ResultSet:
     """A function that returns a ResultSet of all the articles from ScienceNews.org that match a given topic parameter."""
     # define variable to store sciencenews incomplete URL
     website_url = "https://www.sciencenews.org/topic/"
-
-    # create list of possible topics
-    topics_list: list[str] = ["tech", "space", "physics", "life", "humans", "earth"]
 
     # loop until user picks a valid topic
     while topic not in topics_list:
