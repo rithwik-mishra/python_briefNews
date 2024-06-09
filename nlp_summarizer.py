@@ -2,7 +2,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
 import heapq
 
-def summarize(long_text: str) -> str:
+def summarize(long_text: str) -> list[str]:
     """Algorithm that summarizes long text into an 8 sentence summary using a 5 step process."""
     # 1. tokenize the text
     stop_words = stopwords.words("english")
@@ -37,5 +37,4 @@ def summarize(long_text: str) -> str:
 
     # 5. use heap queue to extract top 8 largest weighted values and display as summary
     summary_top8 =  heapq.nlargest(8, sentence_freqTable, key = sentence_freqTable.get) 
-    summary = " ".join(summary_top8)
-    return summary
+    return summary_top8
