@@ -9,3 +9,7 @@ The project has two implementations: one using a command line interface that all
 [Tkinter implementation](tkinter_img.jpg)
 
 ## Installation
+1. Fork this repository
+2. Use git clone to install it to your local machine
+3. Install libraries in [requirements.txt](requirements.txt)
+4. Run either [test_commandLine.py](test_commandLine.py) or [main.py](main.py)
