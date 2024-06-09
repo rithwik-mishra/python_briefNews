@@ -31,7 +31,7 @@ def test_commandLine() -> None:
 
 
         print(f"{title}: {url}")
-        summary = summarize(full_text)
+        summary = " ".join(summarize(full_text))
         print(f"{summary}")
 
 if __name__ == "__main__":
